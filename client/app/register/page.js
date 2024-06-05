@@ -1,19 +1,30 @@
 'use client'
-import { useState } from "react"
+import { useContext, useEffect, useState } from "react"
 import axios from 'axios'
 import { toast } from "react-toastify";
 import { SyncOutlined } from "@ant-design/icons";
 import Link from "next/link";
+import { Context } from "@/context";
+import { useRouter } from "next/navigation";
 
 const RegisterPage = () => {
       const [name, setName] = useState("");
       const [email, setEmail] = useState("");
       const [password, setPassword] = useState("");
       const [loading, setLoading] = useState(false);
+      const { state } = useContext(Context);
+      const router = useRouter()
+      useEffect(() => {
+            if (state.user) {
+                  router.push('/');
+            }
+      }, [state.user]);
       const handleSubmit = async (e) => {
             setLoading(true);
             e.preventDefault();
+
             try {
+
                   const { data } = await axios.post(`${process.env.NEXT_PUBLIC_API}/register`, {
                         name, email, password
                   });
@@ -58,7 +69,7 @@ const RegisterPage = () => {
                               />
 
                               <button type="submit" className="btn btn-block btn-primary p-2 w-100"
-                              disabled = {!name || !email ||!password ||loading}
+                                    disabled={!name || !email || !password || loading}
                               >
                                     {loading ? <SyncOutlined spin /> : "Submit"}
                               </button>
